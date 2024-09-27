@@ -3,6 +3,7 @@
 # import data and inspect
 #
 library(tidyverse)
+library(caret)
 library(dslabs)
 data(us_contagious_diseases)
 str(us_contagious_diseases)
