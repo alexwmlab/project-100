@@ -1,0 +1,89 @@
+---
+title: "Contribution of Vaccines"
+author: "HA W.M. ALEX"
+date: "2024-09-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	comment =""
+)
+```
+
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+
+```{r disease}
+# import data and inspect
+#
+library(tidyverse)
+library(dslabs)
+data(us_contagious_diseases)
+str(us_contagious_diseases)
+ 
+
+# assign dat to the per 10,000 rate of measles, removing Alaska and Hawaii and adjusting for weeks reporting
+#
+the_disease <- "Measles"
+dat <- us_contagious_diseases %>%
+  filter(!state %in% c("Hawaii", "Alaska") & disease == the_disease) %>%
+  mutate(rate = count / population * 10000 * 52/weeks_reporting) %>%
+  mutate(state = reorder(state, rate))
+
+
+
+```
+
+
+```{r ggplot tile}
+# tile plot of disease rate by state and year
+#
+dat %>% ggplot(aes(year, state, fill=rate)) +
+        geom_tile(color = "grey50") +
+        scale_x_continuous(expand = c(0,0)) +
+        scale_fill_gradientn(colors = RColorBrewer::brewer.pal(9, "PuRd"), trans = "sqrt") +
+        geom_vline(xintercept = 1963, col = "cyan") +
+        theme_minimal() + theme(panel.grid = element_blank()) +
+        ggtitle(the_disease) +
+        ylab("") +
+        xlab("")
+```
+
+\newpage
+
+```{r ggplot line}
+
+# plot disease rates per year in California
+#
+dat %>% filter(state == "California" & !is.na(rate)) %>%
+  ggplot(aes(year, rate)) +
+  geom_line() +
+  ylab("Cases per 10,000") +
+  geom_vline(xintercept=1963, col = "blue")
+
+
+```
+\newpage
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
